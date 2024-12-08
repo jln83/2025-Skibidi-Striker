@@ -1,10 +1,17 @@
 import pygame
+from random import randint
 
 
 class Bullet:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def touche(self):
+        for i in range(len(ecran_jeu.skibidis)):
+            if ecran_jeu.skibidis[i].x + 60 > self.x > ecran_jeu.skibidis[i].x and ecran_jeu.skibidis[i].y + 60 > self.y > ecran_jeu.skibidis[i].y:
+                ecran_jeu.skibidis.pop(i)
+                break
 
 
 class Camera:  # joueur
@@ -32,7 +39,27 @@ class Camera:  # joueur
                 self.bullets.pop(0)
             else:
                 ecran_jeu.screen.blit(self.bullet_img, (bullet.x, bullet.y))
+                bullet.touche()
         self.precedent_tir += 1
+
+
+class Skibidi:
+    def __init__(self, x):
+        self.x = x
+        self.y = -50
+        self.img = pygame.image.load('images_de _devellopement/skibidi.png').convert_alpha()
+        self.speedx = 2
+        self.speedy = 2
+        self.xmin = max(x - 50, 0)
+        self.xmax = min(x + 50, ecran_jeu.largeur - 50)
+
+    def act_img(self):
+        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+
+        self.x += self.speedx
+        self.y += self.speedy
+        if self.x < self.xmin or self.x > self.xmax:
+            self.speedx *= -1
 
 
 class Back:
@@ -60,6 +87,7 @@ class ecran_jeu:
         self.fond = []
         for i in range(hauteur // 80):
             self.fond.append(Back(i * 320))
+        self.skibidis = []
 
     def boucle_run(self):
         right = False
@@ -68,6 +96,7 @@ class ecran_jeu:
         down = False
         bullet = False
         camera = Camera()
+
         continuer = True
         while continuer:
             # test touches appuyées
@@ -84,27 +113,34 @@ class ecran_jeu:
                     down = event.type == pygame.KEYDOWN
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
+                    self.skibidis.append(Skibidi(randint(0, self.largeur)))
 
             if bullet:
                 camera.add_bullet()
-            if right and camera.x < self.largeur - 50:
+            if right and camera.x < self.largeur - 34:
                 camera.x += camera.speed
-            if left and camera.x > 0:
+            if left and camera.x > -25:
                 camera.x -= camera.speed
             if up and camera.y > self.hauteur - 200:
                 camera.y -= camera.speed
-            if down and camera.y < self.hauteur - 50:
+            if down and camera.y < self.hauteur - 25:
                 camera.y += camera.speed
 
-            for Back in self.fond:
-                Back.act_img()
+            for back in self.fond:
+                back.act_img()
+            for skibidi in self.skibidis:
+                skibidi.act_img()
             camera.act_img()
             pygame.display.update()
             self.clock.tick(50)
 
 
-ecran_jeu = ecran_jeu(600, 600)
+ecran_jeu: ecran_jeu = ecran_jeu(600, 600)
 ecran_jeu.boucle_run()
 
 # bar espace pour tirer
 # fleches pour se deplacer
+# n pour ajouter des ennemis
+# ennemis bougent en largeur de 100 pixels et avancent petit a petit
+# et se font eliminer lorsqu'ils touchent une balle
