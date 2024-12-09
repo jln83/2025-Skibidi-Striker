@@ -1,8 +1,7 @@
 import pygame
-import mobs
 import math
 from random import randint
-
+#import mobs
 
 
 
@@ -27,7 +26,7 @@ class Mini_skibidi:
         normy = self.targety-self.y
         d=math.sqrt(normx**2+normy**2)
         self.x += self.speedx*normx/d
-        self.y += self.speedy*normy/d
+        self.y += self.speedx*normy/d
         self.targetx=camera.x
         self.targety=camera.y
 
@@ -138,7 +137,6 @@ class ecran_jeu:
         up = False
         down = False
         bullet = False
-        camera = Camera(100,10,10)
 
         continuer = True
         while continuer:
@@ -181,8 +179,8 @@ class ecran_jeu:
             self.clock.tick(50)
 
 
-ecran_jeu: ecran_jeu = ecran_jeu(600, 600)
-camera: camera=Camera(100,10,5)
+ecran_jeu = ecran_jeu(600, 600)
+camera = Camera(100,10,5)
 ecran_jeu.boucle_run()
 
 # bar espace pour tirer
