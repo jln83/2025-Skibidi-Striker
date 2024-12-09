@@ -18,7 +18,6 @@ pip install pygame
 ## Commandes du jeu
 
 - **Flèches directionnelles** : Déplacez votre vaisseau.
-- **Espace** : Tirez sur les ennemis.
 - **Échap** : Quittez le jeu.
 
 ## À propos
