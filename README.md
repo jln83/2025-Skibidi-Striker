@@ -14,20 +14,6 @@ Si ce n'est pas déjà fait, installez Pygame à l'aide de la commande suivante 
 pip install pygame
 ```
 
-## Comment jouer ?
-
-1. Clonez ce dépôt sur votre machine locale :
-   ```bash
-   git clone https://github.com/votre-utilisateur/skibidi-striker.git
-   ```
-2. Naviguez dans le répertoire du projet :
-   ```bash
-   cd skibidi-striker
-   ```
-3. Lancez le jeu :
-   ```bash
-   python main.py
-   ```
 
 ## Commandes du jeu
 
