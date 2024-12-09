@@ -38,11 +38,3 @@ pip install pygame
 ## À propos
 
 Ce jeu a été créé avec Pygame et allie fun et action dans un univers déjanté. Amusez-vous bien !
-
-## Contributions
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir des issues ou à proposer des pull requests pour améliorer le jeu.
-
-## Licence
-
-Ce projet est sous licence MIT. Consultez le fichier `LICENSE` pour plus d'informations.
