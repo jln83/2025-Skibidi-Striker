@@ -9,26 +9,53 @@ import mobs
 # Mobs:
 
 class Mini_skibidi:
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y, speed, target):
+        self.memox = x
+        self.memoy = y
         self.x = x
         self.y = y
         self.img_tete = pygame.image.load('images_de _devellopement/tete_skibidi.png').convert_alpha()
         self.img_toilettes = pygame.image.load('images_de _devellopement/toilette_sanst_tete.png').convert_alpha()
-        self.speedx = speed
-        self.speedy = speed*2
-        self.targetx = 0
-        self.targety = 0
+        self.speed = speed
+        self.target_x = target[0]
+        self.target_y = target[1]
 
     def act_img(self):
+        if self.x > self.target_x > self.memox:
+            self.memox = ecran_jeu.largeur-self.memox
         ecran_jeu.screen.blit(self.img_toilettes, (self.x, self.y))
         ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
-        normx = self.targetx-self.x
-        normy = self.targety-self.y
-        d=math.sqrt(normx**2+normy**2)
-        self.x += self.speedx*normx/d
-        self.y += self.speedx*normy/d
-        self.targetx=camera.x
-        self.targety=camera.y
+
+        dx = (self.x-self.target_x)/(self.target_x-self.memox)
+        self.x += self.speed #* abs(self.targetx-self.memox)/300 #deux version selon celle voulue enlever #
+        self.y = (self.memoy-self.target_y)*dx**2 + self.target_y
+
+
+class Troupe_mini_skibidi:
+    def __init__(self, nb, x, y, speed):
+        self.troupe = []
+        self.nb = nb
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.tempo = 0
+        self.largeur = 90
+        self.hauteur = 90
+        self.target = (camera.x, camera.y)
+
+    def act_img(self):
+        if self.nb > 0 and self.tempo <= 0:
+            self.troupe.append(Mini_skibidi(self.x, self.y, self.speed, self.target))
+            self.nb -= 1
+            self.tempo = self.largeur/self.speed
+        i = 0
+        for mini_skibidi in self.troupe:
+            if mini_skibidi.x > ecran_jeu.largeur:
+                self.troupe.pop(i)
+            mini_skibidi.act_img()
+            i += 1
+        self.tempo -= 1
+
 
 class Large_skibidi:
     def __init__(self, x, y, speed):
@@ -155,7 +182,7 @@ class ecran_jeu:
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                    self.skibidis.append(Mini_skibidi(randint(0, self.largeur),-50,3))
+                    self.skibidis.append(Troupe_mini_skibidi(4,-100,ecran_jeu.largeur-350,3))
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                     self.skibidis.append(Large_skibidi(randint(0, self.largeur),randint(5,200),1))
 
