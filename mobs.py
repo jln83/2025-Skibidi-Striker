@@ -34,39 +34,6 @@ class Mini_skibidi:
                 self.vie -= bullet.damage
 
 
-class Troupe_mini_skibidi:
-    def __init__(self, nb, x, y, speed):
-        self.troupe = []
-        self.nb = nb
-        self.x = x
-        self.y = y
-        self.speed = speed
-        self.tempo = 0
-        self.largeur = 90
-        self.hauteur = 90
-        self.target = (camera.x, camera.y)
-        self.vie = 100 * nb
-
-    def act_img(self):
-        if self.nb > 0 and self.tempo <= 0:
-            self.troupe.append(Mini_skibidi(self.x, self.y, self.speed, self.target))
-            self.nb -= 1
-            self.tempo = self.largeur/self.speed
-        i = 0
-        self.vie = 0
-        for mini_skibidi in self.troupe:
-            if mini_skibidi.x > ecran_jeu.largeur or mini_skibidi.vie <= 0:
-                self.troupe.pop(i)
-            self.vie += mini_skibidi.vie
-            mini_skibidi.act_img()
-            i += 1
-        self.tempo -= 1
-
-    def touche(self, bullets):
-        for mini_skibidi in self.troupe:
-            mini_skibidi.touche(bullets)
-
-
 class Large_skibidi:
     def __init__(self, x, y, speed):
         self.x = x
