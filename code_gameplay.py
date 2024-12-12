@@ -1,9 +1,9 @@
-import pygame
+
 import math
 from random import randint
+
+
 # import mobs
-
-
 
 
 # Mobs:
@@ -21,22 +21,25 @@ class Mini_skibidi:
         self.speed = speed
         self.target_x = target[0]
         self.target_y = target[1]
-        self.vie=100
+        self.vie = 100
+        self.degat = 10
 
     def act_img(self):
         if self.x > self.target_x > self.memox:
-            self.memox = ecran_jeu.largeur-self.memox
+            self.memox = ecran_jeu.largeur - self.memox
         ecran_jeu.screen.blit(self.img_toilettes, (self.x, self.y))
         ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
 
-        dx = (self.x-self.target_x)/(self.target_x-self.memox)
-        self.x += self.speed #* abs(self.targetx-self.memox)/300 #deux version selon celle voulue enlever #
-        self.y = (self.memoy-self.target_y)*dx**2 + self.target_y
+        dx = (self.x - self.target_x) / (self.target_x - self.memox)
+        self.x += self.speed  #* abs(self.targetx-self.memox)/300 #deux version selon celle voulue enlever #
+        self.y = (self.memoy - self.target_y) * dx ** 2 + self.target_y
 
     def touche(self, bullets):
         for bullet in bullets:
-            if self.x <= bullet.x <= self.x+self.largeur and self.y <= bullet.y <= self.y+self.hauteur:
+            if self.x <= bullet.x <= self.x + self.largeur and self.y <= bullet.y <= self.y + self.hauteur:
                 self.vie -= bullet.damage
+                bullet.pene -= 1
+
 
 
 class Large_skibidi:
@@ -45,26 +48,26 @@ class Large_skibidi:
         self.y = y
         self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
-        self.target_y = randint(5,200)
+        self.target_y = randint(5, 200)
         self.img = pygame.image.load('images_de _devellopement/large_skibidi.png').convert_alpha()
-        self.img = pygame.transform.scale(self.img,(125,125))
+        self.img = pygame.transform.scale(self.img, (125, 125))
         self.largeur = 125
         self.hauteur = 125
         self.vie = 100
-
+        self.degat = 10
 
     def act_img(self):
-        if abs(self.x - self.target_x) > 1: #or abs(self.y - self.target_y) > 1:
+        if abs(self.x - self.target_x) > 1:  #or abs(self.y - self.target_y) > 1:
             temp_x = self.speed * (self.target_x - self.x)
             temp_y = self.speed * (self.target_y - self.y)
-            distance = math.sqrt(temp_x**2 + temp_y**2)
+            distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
             temp_x /= distance
             temp_y /= distance
             self.x += temp_x * self.speed
             self.y += temp_y * self.speed
-        else: # RAHHH ça veut pas marcher ça jsp pourquoi dcp euh bah il bouge que une fois pour l'instant
+        else:  # RAHHH ça veut pas marcher ça jsp pourquoi dcp euh bah il bouge que une fois pour l'instant
             self.target_x = randint(0, ecran_jeu.largeur)
-            self.target_y = randint(5,200)
+            self.target_y = randint(5, 200)
 
         self.x = int(self.x)
         self.y = int(self.y)
@@ -72,31 +75,36 @@ class Large_skibidi:
         if 0 <= self.x <= ecran_jeu.largeur - 125 and 0 <= self.y <= ecran_jeu.hauteur - 125:
             ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
-    def touche(self,bullets):
+    def touche(self, bullets):
         for bullet in bullets:
-            if self.x <= bullet.x <= self.x+self.largeur and self.y <= bullet.y <= self.y+self.hauteur:
+            if self.x <= bullet.x <= self.x + self.largeur and self.y <= bullet.y <= self.y + self.hauteur:
                 self.vie -= bullet.damage
+                bullet.pene -= 1
 
 
 #fin mobs
 class Vague:
     def __init__(self):
-        self.skibidis_ingame=[]
-        self.skibidis_outgame=[]
+        self.skibidis_ingame = []
+        self.skibidis_outgame = []
+
     def add(self, skibidi, tempo):
-        self.skibidis_outgame.append([skibidi,tempo])
+        self.skibidis_outgame.append([skibidi, tempo])
+
     def troupe_mini_skibidi(self, nb, x, y, speed):
         for i in range(nb):
-            self.add(Mini_skibidi(x, y, speed, (camera.x,camera.y)), i*Mini_skibidi(-1,-1,-1,(-1,-1)).largeur/speed)
+            self.add(Mini_skibidi(x, y, speed, (camera.x, camera.y)),
+                     i * Mini_skibidi(-1, -1, -1, (-1, -1)).largeur / speed)
+
     def act_img(self):
-        i=0
+        i = 0
         for skibidi in self.skibidis_outgame:
             if skibidi[1] <= 0:
                 self.skibidis_outgame.pop(i)
                 self.skibidis_ingame.append(skibidi[0])
             skibidi[1] -= 1
             i += 1
-        i=0
+        i = 0
         for skibidi in self.skibidis_ingame:
             skibidi.act_img()
             skibidi.touche(camera.bullets)
@@ -105,12 +113,12 @@ class Vague:
             i += 1
 
 
-
-class Bullet:
-    def __init__(self, x, y, damage):
+class Bullet_friendly:
+    def __init__(self, x, y, damage, pene):
         self.x = x
         self.y = y
         self.damage = damage
+        self.pene = pene
 
 
 class Camera:  # joueur
@@ -118,6 +126,8 @@ class Camera:  # joueur
         self.vie = health
         self.degats = damages
         self.speed = speed
+        self.largeur = 90
+        self.hauteur = 47
         self.img = pygame.image.load('images_de _devellopement/camera.png').convert_alpha()
         self.bullet_img = pygame.image.load('images_de _devellopement/bullet.png').convert_alpha()
         self.bullets = []  # liste des balles en train d'etre tirées
@@ -125,22 +135,34 @@ class Camera:  # joueur
         self.y = 500
         self.cadence_tir = 10  # a ameliorer mais fonctionel (1 tir toutes les dix images)
         self.precedent_tir = self.cadence_tir
+        self.NotGetToMuchDamage = 0
 
     def add_bullet(self):
         if self.precedent_tir >= self.cadence_tir:
-            self.bullets.append(Bullet(self.x + 30, self.y + 10, 50))
+            self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, 50, 1))
             self.precedent_tir = 0
+
+    def touche(self, skibidis):
+        if self.NotGetToMuchDamage <= 0:
+            for skibidi in skibidis:
+                if (
+                        skibidi.x + skibidi.largeur >= self.x >= skibidi.x and skibidi.y + skibidi.hauteur >= self.y >= skibidi.y) or (
+                        skibidi.x + skibidi.largeur >= self.x + self.largeur >= skibidi.x and skibidi.y + skibidi.hauteur >= self.y + self.hauteur >= skibidi.y):
+                    self.vie -= skibidi.degat
+                    self.y += skibidi.speed  # knockback
+                    self.NotGetToMuchDamage = 20
+        self.NotGetToMuchDamage -= 1
+        print(self.vie)
 
     def act_img(self):
         ecran_jeu.screen.blit(self.img, (self.x, self.y))
         for bullet in self.bullets:
             bullet.y -= 20
-            if bullet.y < 0:
+            if bullet.y < 0 or bullet.pene <= 0:
                 self.bullets.pop(0)
             else:
                 ecran_jeu.screen.blit(self.bullet_img, (bullet.x, bullet.y))
         self.precedent_tir += 1
-
 
 
 class Back:
@@ -170,6 +192,7 @@ class ecran_jeu:
             self.fond.append(Back(i * 320))
         self.vague = Vague()
 
+
     def boucle_run(self):
         right = False
         left = False
@@ -194,9 +217,9 @@ class ecran_jeu:
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                    self.vague.troupe_mini_skibidi(4,-100, ecran_jeu.largeur-350, 4)
+                    self.vague.troupe_mini_skibidi(4, -100, ecran_jeu.largeur - 350, 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.vague.add(Large_skibidi(randint(0, self.largeur), randint(5, 200), 1),50)
+                    self.vague.add(Large_skibidi(randint(0, self.largeur), randint(5, 200), 1), 50)
 
             if bullet:
                 camera.add_bullet()
@@ -213,11 +236,17 @@ class ecran_jeu:
                 back.act_img()
             self.vague.act_img()
             camera.act_img()
+            camera.touche(self.vague.skibidis_ingame)
+            if camera.vie <= 0:
+                continuer = False
+                print('dead')
             pygame.display.update()
             self.clock.tick(50)
 
 
-ecran_jeu = ecran_jeu(600, 600)
+largeur = 600
+hauteur = 600
+ecran_jeu = ecran_jeu(largeur, hauteur)
 camera = Camera(100, 10, 5)
 ecran_jeu.boucle_run()
 
