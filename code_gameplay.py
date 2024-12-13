@@ -1,7 +1,7 @@
 import pygame
 import math
 from random import randint
-import pygame
+
 
 # import mobs
 
@@ -57,21 +57,23 @@ class Large_skibidi:
         self.degat = 10
 
     def act_img(self):
-        if (self.target_x-self.x)**2+(self.target_y-self.y) >=0: #au cas ou c'est nul pour pas que ça crash
-            distance = math.sqrt((self.target_x-self.x)**2+(self.target_y-self.y))
-        else:
-            distance = 0
-        if distance > 5:
-            delta_x = self.target_x - self.x
-            delta_y = self.target_y - self.y
+        if abs(self.x - self.target_x) > 1:  #or abs(self.y - self.target_y) > 1:
+            temp_x = self.speed * (self.target_x - self.x)
+            temp_y = self.speed * (self.target_y - self.y)
+            distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
+            temp_x /= distance
+            temp_y /= distance
+            self.x += temp_x * self.speed
+            self.y += temp_y * self.speed
+        else:  # RAHHH ça veut pas marcher ça jsp pourquoi dcp euh bah il bouge que une fois pour l'instant
+            self.target_x = randint(0, ecran_jeu.largeur)
+            self.target_y = randint(5, 200)
 
-            direction_x = delta_x / distance
-            direction_y = delta_y / distance
+        self.x = int(self.x)
+        self.y = int(self.y)
 
-            self.x += direction_x * self.speed
-            self.y += direction_y * self.speed
-        else:
-             pass
+        if 0 <= self.x <= ecran_jeu.largeur - 125 and 0 <= self.y <= ecran_jeu.hauteur - 125:
+            ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
     def touche(self, bullets):
         for bullet in bullets:
@@ -108,7 +110,20 @@ class Vague:
             skibidi.touche(camera.bullets)
             if skibidi.vie <= 0:
                 self.skibidis_ingame.pop(i)
+                ecran_jeu.music.son_dead_skibidi.play()
             i += 1
+
+
+class Sound: # il faudra changer les son et leurs volumes
+    def __init__(self):
+        self.music = pygame.mixer.Sound("sons/son skibidi.mp3")
+        self.music.set_volume(0.5)
+        self.music.play(-1)
+        self.son_dead_skibidi = pygame.mixer.Sound("sons/chasse d'eau.mp3")
+        self.son_dead_skibidi.set_volume(0.5)
+        self.sound_bullet = pygame.mixer.Sound("sons/chasse d'eau.mp3")
+        self.sound_bullet.set_volume(0.1)
+
 
 
 class Bullet_friendly:
@@ -135,10 +150,14 @@ class Camera:  # joueur
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
 
+
     def add_bullet(self):
         if self.precedent_tir >= self.cadence_tir:
             self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, 50, 1))
             self.precedent_tir = 0
+            ecran_jeu.music.sound_bullet.play()
+
+
 
     def touche(self, skibidis):
         if self.NotGetToMuchDamage <= 0:
@@ -189,6 +208,7 @@ class ecran_jeu:
         for i in range(hauteur // 80):
             self.fond.append(Back(i * 320))
         self.vague = Vague()
+        self.music = Sound()
 
 
     def boucle_run(self):
@@ -217,9 +237,7 @@ class ecran_jeu:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
                     self.vague.troupe_mini_skibidi(4, -100, ecran_jeu.largeur - 350, 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.skibidis.append(Large_skibidi(randint(0, self.largeur),randint(5,200),1.5))
                     self.vague.add(Large_skibidi(randint(0, self.largeur), randint(5, 200), 1), 50)
-
 
             if bullet:
                 camera.add_bullet()
