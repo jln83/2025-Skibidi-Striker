@@ -42,23 +42,24 @@ class Large_skibidi:
         self.img = pygame.transform.scale(self.img,(125,125))
 
     def act_img(self):
-        if abs(self.x - self.target_x) > 1: #or abs(self.y - self.target_y) > 1:
-            temp_x = self.speed * (self.target_x - self.x)
-            temp_y = self.speed * (self.target_y - self.y)
-            distance = math.sqrt(temp_x**2 + temp_y**2)
-            temp_x /= distance
-            temp_y /= distance
-            self.x += temp_x * self.speed
-            self.y += temp_y * self.speed
-        else: # RAHHH ça veut pas marcher ça jsp pourquoi dcp euh bah il bouge que une fois pour l'instant
+        if (self.target_x-self.x)**2+(self.target_y-self.y) >=0: #au cas ou c'est nul pour pas que ça crash
+            distance = math.sqrt((self.target_x-self.x)**2+(self.target_y-self.y))
+        else:
+            distance = 0
+        if distance > 5:
+            delta_x = self.target_x - self.x
+            delta_y = self.target_y - self.y
+
+            direction_x = delta_x / distance
+            direction_y = delta_y / distance
+
+            self.x += direction_x * self.speed
+            self.y += direction_y * self.speed
+        else:
             self.target_x = randint(0, ecran_jeu.largeur)
             self.target_y = randint(5,200)
 
-        self.x = int(self.x)
-        self.y = int(self.y)
-
-        if 0 <= self.x <= ecran_jeu.largeur - 125 and 0 <= self.y <= ecran_jeu.hauteur - 125:
-            ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
 
 
@@ -159,7 +160,7 @@ class ecran_jeu:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
                     self.skibidis.append(Mini_skibidi(randint(0, self.largeur),-50,3))
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.skibidis.append(Large_skibidi(randint(0, self.largeur),randint(5,200),1))
+                    self.skibidis.append(Large_skibidi(randint(0, self.largeur),randint(5,200),1.5))
 
             if bullet:
                 camera.add_bullet()
