@@ -21,8 +21,8 @@ class Mini_skibidi:
         self.speed = speed
         self.target_x = target[0]
         self.target_y = target[1]
-        self.vie = 100
-        self.degat = 10
+        self.vie = 15
+        self.degat = 5
 
     def act_img(self):
         if self.x > self.target_x > self.memox:
@@ -57,23 +57,19 @@ class Large_skibidi:
         self.degat = 10
 
     def act_img(self):
-        if abs(self.x - self.target_x) > 1:  #or abs(self.y - self.target_y) > 1:
-            temp_x = self.speed * (self.target_x - self.x)
-            temp_y = self.speed * (self.target_y - self.y)
-            distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
-            temp_x /= distance
-            temp_y /= distance
-            self.x += temp_x * self.speed
-            self.y += temp_y * self.speed
-        else:  # RAHHH ça veut pas marcher ça jsp pourquoi dcp euh bah il bouge que une fois pour l'instant
-            self.target_x = randint(0, ecran_jeu.largeur)
+        temp_x = self.speed * (self.target_x - self.x)
+        temp_y = self.speed * (self.target_y - self.y)
+        distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
+        temp_x /= distance
+        temp_y /= distance
+        self.x += temp_x * self.speed
+        self.y += temp_y * self.speed
+        if abs(self.x-self.target_x) < 1 and abs(self.y-self.target_y) < 1:
+            self.target_x = randint(0, ecran_jeu.largeur-125)
             self.target_y = randint(5, 200)
 
-        self.x = int(self.x)
-        self.y = int(self.y)
 
-        if 0 <= self.x <= ecran_jeu.largeur - 125 and 0 <= self.y <= ecran_jeu.hauteur - 125:
-            ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
     def touche(self, bullets):
         for bullet in bullets:
@@ -118,7 +114,7 @@ class Sound: # il faudra changer les son et leurs volumes
     def __init__(self):
         self.music = pygame.mixer.Sound("sons/son skibidi.mp3")
         self.music.set_volume(0.5)
-        self.music.play(-1)
+        #self.music.play(-1)
         self.son_dead_skibidi = pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.son_dead_skibidi.set_volume(0.5)
         self.sound_bullet = pygame.mixer.Sound("sons/chasse d'eau.mp3")
@@ -135,9 +131,10 @@ class Bullet_friendly:
 
 
 class Camera:  # joueur
-    def __init__(self, health, damages, speed):
-        self.vie = health
-        self.degats = damages
+    def __init__(self, speed):
+        self.vie = 100
+        self.vie_max = self.vie
+        self.degats = 10
         self.speed = speed
         self.largeur = 90
         self.hauteur = 47
@@ -146,14 +143,18 @@ class Camera:  # joueur
         self.bullets = []  # liste des balles en train d'etre tirées
         self.x = 275
         self.y = 500
-        self.cadence_tir = 10  # a ameliorer mais fonctionel (1 tir toutes les dix images)
+        self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
+        self.delay_regen_dmg = 250
+        self.delay_regen = 100
+        self.precedent_regen = self.delay_regen
+        self.regen = 1
 
 
     def add_bullet(self):
         if self.precedent_tir >= self.cadence_tir:
-            self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, 50, 1))
+            self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, self.degats, 1))
             self.precedent_tir = 0
             ecran_jeu.music.sound_bullet.play()
 
@@ -168,11 +169,20 @@ class Camera:  # joueur
                     self.vie -= skibidi.degat
                     self.y += skibidi.speed  # knockback
                     self.NotGetToMuchDamage = 20
+                    self.precedent_regen = self.delay_regen_dmg
         self.NotGetToMuchDamage -= 1
         print(self.vie)
 
+    def act_regen(self):
+        if self.precedent_regen <= 0 and self.vie < self.vie_max:
+            self.vie += self.regen
+            self.precedent_regen = self.delay_regen
+        self.precedent_regen -= 1
+
     def act_img(self):
         ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        self.touche(ecran_jeu.vague.skibidis_ingame)
+        self.act_regen()
         for bullet in self.bullets:
             bullet.y -= 20
             if bullet.y < 0 or bullet.pene <= 0:
@@ -235,7 +245,7 @@ class ecran_jeu:
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                    self.vague.troupe_mini_skibidi(4, -100, ecran_jeu.largeur - 350, 4)
+                    self.vague.troupe_mini_skibidi(7, -100, ecran_jeu.largeur - 350, 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                     self.vague.add(Large_skibidi(randint(0, self.largeur), randint(5, 200), 1), 50)
 
@@ -254,7 +264,6 @@ class ecran_jeu:
                 back.act_img()
             self.vague.act_img()
             camera.act_img()
-            camera.touche(self.vague.skibidis_ingame)
             if camera.vie <= 0:
                 continuer = False
                 print('dead')
@@ -262,10 +271,11 @@ class ecran_jeu:
             self.clock.tick(50)
 
 
+
 largeur = 600
 hauteur = 600
 ecran_jeu = ecran_jeu(largeur, hauteur)
-camera = Camera(100, 10, 5)
+camera = Camera(5)
 ecran_jeu.boucle_run()
 
 # bar espace pour tirer
