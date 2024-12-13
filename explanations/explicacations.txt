@@ -1,4 +1,4 @@
-Joueur (level 1):
+Joueur(level 1):
 	100hp 
 	1 balle toutes les 0.5sec
 	10 dégats
