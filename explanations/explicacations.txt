@@ -5,7 +5,7 @@ Joueur(level 1):
 	régénère 1hp/2sec dès qu'il ne prend pas de dégat pendant 5sec
 
 	
-Minis skibidis:
+Minis skibidis :
 	Foncent sur la position du joueur (au moment ou ils apparaissent) en groupe de 7 (un par un)
 	15hp chacun
 	5 dégats à l'impact
