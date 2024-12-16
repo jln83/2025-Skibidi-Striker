@@ -16,6 +16,8 @@ class Mini_skibidi:
         self.y = y
         self.img_tete = pygame.image.load('images_de _devellopement/tete_skibidi.png').convert_alpha()
         self.img_toilettes = pygame.image.load('images_de _devellopement/toilette_sanst_tete.png').convert_alpha()
+        self.img_tete = pygame.transform.scale(self.img_tete, (60, 60))
+        self.img_toilettes = pygame.transform.scale(self.img_toilettes, (60, 60))
         self.largeur = 90
         self.hauteur = 90
         self.speed = speed
