@@ -18,8 +18,8 @@ class Mini_skibidi:
         self.img_toilettes = pygame.image.load('images_de _devellopement/toilette_sanst_tete.png').convert_alpha()
         self.img_tete = pygame.transform.scale(self.img_tete, (60, 60))
         self.img_toilettes = pygame.transform.scale(self.img_toilettes, (60, 60))
-        self.largeur = 90
-        self.hauteur = 90
+        self.largeur = 65
+        self.hauteur = 65
         self.speed = speed
         self.target_x = target[0]
         self.target_y = target[1]
@@ -33,7 +33,7 @@ class Mini_skibidi:
         ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
 
         dx = (self.x - self.target_x) / (self.target_x - self.memox)
-        self.x += self.speed  #* abs(self.targetx-self.memox)/300 #deux version selon celle voulue enlever #
+        self.x += self.speed  # * abs(self.target_x-self.memox)/300 # deux version selon celle voulue enlever #
         self.y = (self.memoy - self.target_y) * dx ** 2 + self.target_y
 
     def touche(self, bullets):
@@ -43,6 +43,24 @@ class Mini_skibidi:
                 bullet.pene -= 1
 
 
+class Bullet_Ennemi:
+    def __init__(self, x, y, degat, pene, speed):
+        self.img = pygame.image.load('images_de _devellopement/bullet.png').convert_alpha()
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.degat = degat
+        self.vie = pene
+        self.largeur = 1
+        self.hauteur = 1
+
+    def act_img(self):
+        self.y += self.speed
+        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+
+    def touche(self, bullets):
+        pass
+
 
 class Large_skibidi:
     def __init__(self, x, y, speed):
@@ -51,12 +69,20 @@ class Large_skibidi:
         self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
         self.target_y = randint(5, 200)
-        self.img = pygame.image.load('images_de _devellopement/large_skibidi.png').convert_alpha()
+        self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (125, 125))
         self.largeur = 125
         self.hauteur = 125
         self.vie = 100
         self.degat = 10
+        self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
+        self.precedent_tir = self.cadence_tir
+
+    def add_bullet(self):
+        if self.precedent_tir <= 0:
+            ecran_jeu.vague.add(Bullet_Ennemi(self.x + 60, self.y + 110, self.degat, 1, 5), 0)
+            self.precedent_tir = self.cadence_tir
+        self.precedent_tir -= 1
 
     def act_img(self):
         temp_x = self.speed * (self.target_x - self.x)
@@ -69,8 +95,7 @@ class Large_skibidi:
         if abs(self.x-self.target_x) < 1 and abs(self.y-self.target_y) < 1:
             self.target_x = randint(0, ecran_jeu.largeur-125)
             self.target_y = randint(5, 200)
-
-
+        self.add_bullet()
         ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
     def touche(self, bullets):
@@ -80,7 +105,7 @@ class Large_skibidi:
                 bullet.pene -= 1
 
 
-#fin mobs
+# fin mobs
 class Vague:
     def __init__(self):
         self.skibidis_ingame = []
@@ -112,16 +137,15 @@ class Vague:
             i += 1
 
 
-class Sound: # il faudra changer les son et leurs volumes
+class Sound:  # il faudra changer les son et leurs volumes
     def __init__(self):
         self.music = pygame.mixer.Sound("sons/son skibidi.mp3")
         self.music.set_volume(0.5)
-        #self.music.play(-1)
+        # self.music.play(-1)
         self.son_dead_skibidi = pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.son_dead_skibidi.set_volume(0.5)
         self.sound_bullet = pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.sound_bullet.set_volume(0.1)
-
 
 
 class Bullet_friendly:
@@ -142,6 +166,8 @@ class Camera:  # joueur
         self.hauteur = 47
         self.img = pygame.image.load('images_de _devellopement/camera.png').convert_alpha()
         self.bullet_img = pygame.image.load('images_de _devellopement/bullet.png').convert_alpha()
+        self.vie_img = pygame.image.load('images_de _devellopement/img_vie.png')
+        self.vie_img = pygame.transform.scale(self.vie_img, (self.largeur, 5))
         self.bullets = []  # liste des balles en train d'etre tirées
         self.x = 275
         self.y = 500
@@ -153,21 +179,25 @@ class Camera:  # joueur
         self.precedent_regen = self.delay_regen
         self.regen = 1
 
-
     def add_bullet(self):
         if self.precedent_tir >= self.cadence_tir:
             self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, self.degats, 1))
             self.precedent_tir = 0
             ecran_jeu.music.sound_bullet.play()
 
-
-
     def touche(self, skibidis):
         if self.NotGetToMuchDamage <= 0:
             for skibidi in skibidis:
                 if (
-                        skibidi.x + skibidi.largeur >= self.x >= skibidi.x and skibidi.y + skibidi.hauteur >= self.y >= skibidi.y) or (
-                        skibidi.x + skibidi.largeur >= self.x + self.largeur >= skibidi.x and skibidi.y + skibidi.hauteur >= self.y + self.hauteur >= skibidi.y):
+                        skibidi.x + skibidi.largeur >= self.x >= skibidi.x and (
+                        skibidi.y + skibidi.hauteur >= self.y >= skibidi.y or skibidi.y + skibidi.hauteur >= self.y + self.hauteur >= skibidi.y) or (
+                        skibidi.x + skibidi.largeur >= self.x + self.largeur >= skibidi.x and (
+                        skibidi.y + skibidi.hauteur >= self.y >= skibidi.y or skibidi.y + skibidi.hauteur >= self.y + self.hauteur >= skibidi.y)) or (
+                        self.x <= skibidi.x <= self.x + self.largeur and (
+                        self.y <= skibidi.y <= self.y + self.hauteur or self.y <= skibidi.y <= self.y + self.hauteur)) or (
+                        self.x <= skibidi.x <= self.x + self.largeur and (
+                        self.y <= skibidi.y <= self.y + self.hauteur or self.y <= skibidi.y <= self.y + self.hauteur))):
+
                     self.vie -= skibidi.degat
                     self.y += skibidi.speed  # knockback
                     self.NotGetToMuchDamage = 20
@@ -175,16 +205,7 @@ class Camera:  # joueur
         self.NotGetToMuchDamage -= 1
         print(self.vie)
 
-    def act_regen(self):
-        if self.precedent_regen <= 0 and self.vie < self.vie_max:
-            self.vie += self.regen
-            self.precedent_regen = self.delay_regen
-        self.precedent_regen -= 1
-
-    def act_img(self):
-        ecran_jeu.screen.blit(self.img, (self.x, self.y))
-        self.touche(ecran_jeu.vague.skibidis_ingame)
-        self.act_regen()
+    def act_bullet(self):
         for bullet in self.bullets:
             bullet.y -= 20
             if bullet.y < 0 or bullet.pene <= 0:
@@ -192,6 +213,24 @@ class Camera:  # joueur
             else:
                 ecran_jeu.screen.blit(self.bullet_img, (bullet.x, bullet.y))
         self.precedent_tir += 1
+
+    def act_regen(self):
+        if self.precedent_regen <= 0 and self.vie < self.vie_max:
+            self.vie += self.regen
+            self.precedent_regen = self.delay_regen
+        self.precedent_regen -= 1
+
+    def act_img_vie(self):
+        self.vie_img = pygame.transform.scale(self.vie_img, (self.vie/self.vie_max*self.largeur, 5))
+        ecran_jeu.screen.blit(self.vie_img, (self.x, self.y + self.hauteur + 5))
+
+    def act_img(self):
+        self.act_img_vie()
+        self.touche(ecran_jeu.vague.skibidis_ingame)
+        self.act_regen()
+        self.act_bullet()
+        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+
 
 
 class Back:
@@ -221,7 +260,6 @@ class ecran_jeu:
             self.fond.append(Back(i * 320))
         self.vague = Vague()
         self.music = Sound()
-
 
     def boucle_run(self):
         right = False
