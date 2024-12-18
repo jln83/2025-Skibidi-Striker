@@ -171,7 +171,7 @@ class Camera:  # joueur
         self.hauteur = 47
         self.img = pygame.image.load('images_de _devellopement/camera.png').convert_alpha()
         self.bullet_img = pygame.image.load('images_de _devellopement/bullet.png').convert_alpha()
-        self.vie_img = pygame.image.load('images_de _devellopement/fond.jpg')
+        self.vie_img = pygame.image.load('images_de _devellopement/img_vie.png')
         self.vie_img = pygame.transform.scale(self.vie_img, (self.largeur, 5))
         self.bullets = []  # liste des balles en train d'etre tirées
         self.x = 275
