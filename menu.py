@@ -2,6 +2,11 @@ import pygame
 import sys
 import subprocess
 
+pygame.mixer.init()
+menue = pygame.mixer.Sound('sons\menu.mp3')  # Remplacez par votre fichier audio
+
+
+
 # Initialisation de Pygame
 pygame.init()
 
@@ -45,20 +50,20 @@ def draw_credits():
     screen.blit(text, text_rect)
 
 def main_menu():
-    pygame.mixer.init()
+    
     pygame.mixer.music.load("sons/bruitdefond2.mp3")
-    volume = 0.5  # Remplacez par une valeur entre 0.0 et 1.0
-    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
     global selected, current_menu
     running = True
     while running:
-        for event in pygame.event.get():
+        for event in pygame.event.get():    
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
+                menue.play()
                 if current_menu == "main":
                     if event.key == pygame.K_UP:
                         selected = (selected - 1) % len(options)
@@ -81,6 +86,7 @@ def main_menu():
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
+                menue.play()
                 if current_menu == "main":
                     for i, option in enumerate(options):
                         text_rect = font.render(option, True, WHITE).get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + i * 80))
@@ -104,6 +110,7 @@ def main_menu():
             screen.blit(text, text_rect)
 
         pygame.display.flip()
+
 
 # Lancer le menu principal
 main_menu()
