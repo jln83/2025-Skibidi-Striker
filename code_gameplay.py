@@ -317,8 +317,8 @@ class ecran_jeu:
 
 
 
-largeur = 600
-hauteur = 600
+largeur =  1280
+hauteur = 720
 ecran_jeu = ecran_jeu(largeur, hauteur)
 camera = Camera(5)
 ecran_jeu.boucle_run()
