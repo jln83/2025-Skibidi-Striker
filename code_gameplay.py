@@ -146,9 +146,9 @@ class Sound:  # il faudra changer les son et leurs volumes
         self.son_dead_skibidi.set_volume(0.5)
         self.sound_bullet = pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.sound_bullet.set_volume(0.1)
-        self.son_menu=pygame.mixer.Sound()
+        self.son_menu=pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.son_menu.set_volume(0.1)
-        self.son_click=pygame.mixer.Sound()
+        self.son_click=pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.son_click.set_volume(0.1)
 
 
