@@ -45,6 +45,11 @@ def draw_credits():
     screen.blit(text, text_rect)
 
 def main_menu():
+    pygame.mixer.init()
+    pygame.mixer.music.load("sons/bruitdefond2.mp3")
+    volume = 0.5  # Remplacez par une valeur entre 0.0 et 1.0
+    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.play(-1)
     global selected, current_menu
     running = True
     while running:
@@ -61,6 +66,7 @@ def main_menu():
                         selected = (selected + 1) % len(options)
                     elif event.key == pygame.K_RETURN:
                         if options[selected] == "Lancer le Jeu":
+                            pygame.quit()
                             subprocess.run(["python", "code_gameplay.py"])
                         elif options[selected] == "Settings":
                             current_menu = "coming_soon"
@@ -80,6 +86,7 @@ def main_menu():
                         text_rect = font.render(option, True, WHITE).get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + i * 80))
                         if text_rect.collidepoint(mouse_pos):
                             if option == "Lancer le Jeu":
+                                pygame.quit()
                                 subprocess.run(["python", "code_gameplay.py"])
                             elif option == "Settings":
                                 current_menu = "coming_soon"
