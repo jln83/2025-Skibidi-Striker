@@ -139,13 +139,18 @@ class Vague:
 
 class Sound:  # il faudra changer les son et leurs volumes
     def __init__(self):
-        self.music = pygame.mixer.Sound("sons/son skibidi.mp3")
+        self.music = pygame.mixer.Sound("sons/bruitdefond2.mp3")#il exiset aussi "bruitdefond"
         self.music.set_volume(0.5)
-        # self.music.play(-1)
-        self.son_dead_skibidi = pygame.mixer.Sound("sons/chasse d'eau.mp3")
+        self.music.play(-1)
+        self.son_dead_skibidi = pygame.mixer.Sound("sons/mortennemie.mp3")
         self.son_dead_skibidi.set_volume(0.5)
         self.sound_bullet = pygame.mixer.Sound("sons/chasse d'eau.mp3")
         self.sound_bullet.set_volume(0.1)
+        self.son_menu=pygame.mixer.Sound()
+        self.son_menu.set_volume(0.1)
+        self.son_click=pygame.mixer.Sound()
+        self.son_click.set_volume(0.1)
+
 
 
 class Bullet_friendly:
