@@ -39,7 +39,7 @@ def draw_menu():
 
 def draw_credits():
     screen.fill(BLACK)
-    text = font.render("Maxime, Julain, Clément, Tristant", True, WHITE)
+    text = font.render("Maxime, Julain, Clément, Tristan", True, WHITE)
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
 
