@@ -1,7 +1,7 @@
 import pygame
 import math
 from random import randint
-import menu
+
 
 
 # import mobs
