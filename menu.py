@@ -5,11 +5,8 @@ import subprocess
 pygame.mixer.init()
 menue = pygame.mixer.Sound('sons\menu.mp3')  # Remplacez par votre fichier audio
 
-
-
 # Initialisation de Pygame
 pygame.init()
-
 # Dimensions de l'écran
 SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -23,14 +20,11 @@ HIGHLIGHT = (50, 150, 255)
 
 # Police
 font = pygame.font.Font(None, 50)
-
 # Options du menu
 options = ["Lancer le Jeu", "Settings", "Crédits"]
 selected = 0
-
 # Variable d'état
 current_menu = "main"
-
 def draw_menu():
     screen.fill(BLACK)
     for i, option in enumerate(options):
@@ -45,7 +39,7 @@ def draw_menu():
 
 def draw_credits():
     screen.fill(BLACK)
-    text = font.render("Maxime", True, WHITE)
+    text = font.render("Maxime, Julain, Clément, Tristant", True, WHITE)
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
 
