@@ -1,8 +1,8 @@
 import pygame
 import math
 from random import randint
-
-
+import subprocess
+import sys
 
 # import mobs
 
@@ -286,7 +286,11 @@ class ecran_jeu:
             # test touches appuyées
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    continuer = False
+                    subprocess.Popen(["python", "menu.py"])
+                # Quitter le programme actuel
+                    running = False
+                    pygame.quit()
+                    sys.exit()
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_RIGHT:
                     right = event.type == pygame.KEYDOWN
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_LEFT:
@@ -324,6 +328,10 @@ class ecran_jeu:
                 print('dead')
             pygame.display.update()
             self.clock.tick(50)
+            
+        
+
+            
 
 
 

@@ -58,7 +58,6 @@ class Menu:
                     running = False
                     sys.exit()
 
-
                 if event.type == pygame.KEYDOWN:
                     self.menue.play()
                     if self.current_menu == "main":
@@ -68,8 +67,8 @@ class Menu:
                             self.selected = (self.selected + 1) % len(self.options)
                         elif event.key == pygame.K_RETURN:
                             if self.options[self.selected] == "Lancer le Jeu":
-                                running=False
-                                subprocess.Popen(["python", "code_gameplay.py"])
+                                running = False
+                                subprocess.run(["python", "code_gameplay.py"])
                             elif self.options[self.selected] == "Settings":
                                 self.current_menu = "coming_soon"
                             elif self.options[self.selected] == "Crédits":
@@ -89,8 +88,8 @@ class Menu:
                             text_rect = self.font.render(option, True, self.WHITE).get_rect(center=(self.largeur // 2, self.hauteur // 2 + i * 80))
                             if text_rect.collidepoint(mouse_pos):
                                 if option == "Lancer le Jeu":
-                                    running=False
-                                    subprocess.Popen(["python", "code_gameplay.py"])
+                                    running = False
+                                    subprocess.run(["python", "code_gameplay.py"])
                                 elif option == "Settings":
                                     self.current_menu = "coming_soon"
                                 elif option == "Crédits":
