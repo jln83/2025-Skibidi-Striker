@@ -1,6 +1,7 @@
 import pygame
 import math
 from random import randint
+import menu
 
 
 # import mobs
@@ -9,7 +10,8 @@ from random import randint
 # Mobs:
 
 class Mini_skibidi:
-    def __init__(self, x, y, speed, target):
+    def __init__(self, ecran_jeu, x, y, speed, target):
+        self.ecran_jeu = ecran_jeu
         self.memox = x
         self.memoy = y
         self.x = x
@@ -28,9 +30,9 @@ class Mini_skibidi:
 
     def act_img(self):
         if self.x > self.target_x > self.memox:
-            self.memox = ecran_jeu.largeur - self.memox
-        ecran_jeu.screen.blit(self.img_toilettes, (self.x, self.y))
-        ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
+            self.memox = self.ecran_jeu.largeur - self.memox
+        self.ecran_jeu.screen.blit(self.img_toilettes, (self.x, self.y))
+        self.ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
 
         dx = (self.x - self.target_x) / (self.target_x - self.memox)
         self.x += self.speed  # * abs(self.target_x-self.memox)/300 # deux version selon celle voulue enlever #
@@ -44,7 +46,8 @@ class Mini_skibidi:
 
 
 class Bullet_Ennemi:
-    def __init__(self, x, y, degat, pene, speed):
+    def __init__(self, ecran_jeu, x, y, degat, pene, speed):
+        self.ecran_jeu = ecran_jeu
         self.img = pygame.image.load('images_de _devellopement/bullet.png').convert_alpha()
         self.x = x
         self.y = y
@@ -56,14 +59,15 @@ class Bullet_Ennemi:
 
     def act_img(self):
         self.y += self.speed
-        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
     def touche(self, bullets):
         pass
 
 
 class Large_skibidi:
-    def __init__(self, x, y, speed):
+    def __init__(self, ecran_jeu, x, y, speed):
+        self.ecran_jeu = ecran_jeu
         self.x = x
         self.y = y
         self.speed = speed
@@ -80,7 +84,7 @@ class Large_skibidi:
 
     def add_bullet(self):
         if self.precedent_tir <= 0:
-            ecran_jeu.vague.add(Bullet_Ennemi(self.x + 60, self.y + 110, self.degat, 1, 5), 0)
+            self.ecran_jeu.vague.add(Bullet_Ennemi(self.ecran_jeu, self.x + 60, self.y + 110, self.degat, 1, 5), 0)
             self.precedent_tir = self.cadence_tir
         self.precedent_tir -= 1
 
@@ -93,10 +97,10 @@ class Large_skibidi:
         self.x += temp_x * self.speed
         self.y += temp_y * self.speed
         if abs(self.x-self.target_x) < 1 and abs(self.y-self.target_y) < 1:
-            self.target_x = randint(0, ecran_jeu.largeur-125)
+            self.target_x = randint(0, self.ecran_jeu.largeur-125)
             self.target_y = randint(5, 200)
         self.add_bullet()
-        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
     def touche(self, bullets):
         for bullet in bullets:
@@ -107,7 +111,8 @@ class Large_skibidi:
 
 # fin mobs
 class Vague:
-    def __init__(self):
+    def __init__(self, ecran_jeu):
+        self.ecran_jeu = ecran_jeu
         self.skibidis_ingame = []
         self.skibidis_outgame = []
 
@@ -116,8 +121,8 @@ class Vague:
 
     def troupe_mini_skibidi(self, nb, x, y, speed):
         for i in range(nb):
-            self.add(Mini_skibidi(x, y, speed, (camera.x, camera.y)),
-                     i * Mini_skibidi(-1, -1, -1, (-1, -1)).largeur / speed)
+            self.add(Mini_skibidi(self.ecran_jeu, x, y, speed, (self.ecran_jeu.camera.x, self.ecran_jeu.camera.y)),
+                     i * Mini_skibidi(self.ecran_jeu, -1, -1, -1, (-1, -1)).largeur / speed)
 
     def act_img(self):
         i = 0
@@ -130,10 +135,10 @@ class Vague:
         i = 0
         for skibidi in self.skibidis_ingame:
             skibidi.act_img()
-            skibidi.touche(camera.bullets)
+            skibidi.touche(self.ecran_jeu.camera.bullets)
             if skibidi.vie <= 0:
                 self.skibidis_ingame.pop(i)
-                ecran_jeu.music.son_dead_skibidi.play()
+                self.ecran_jeu.music.son_dead_skibidi.play()
             i += 1
 
 
@@ -162,7 +167,8 @@ class Bullet_friendly:
 
 
 class Camera:  # joueur
-    def __init__(self, speed):
+    def __init__(self, ecran_jeu, speed):
+        self.ecran_jeu = ecran_jeu
         self.vie = 100
         self.vie_max = self.vie
         self.degats = 10
@@ -188,7 +194,7 @@ class Camera:  # joueur
         if self.precedent_tir >= self.cadence_tir:
             self.bullets.append(Bullet_friendly(self.x + 30, self.y + 10, self.degats, 1))
             self.precedent_tir = 0
-            ecran_jeu.music.sound_bullet.play()
+            self.ecran_jeu.music.sound_bullet.play()
 
     def touche(self, skibidis):
         if self.NotGetToMuchDamage <= 0:
@@ -216,7 +222,7 @@ class Camera:  # joueur
             if bullet.y < 0 or bullet.pene <= 0:
                 self.bullets.pop(0)
             else:
-                ecran_jeu.screen.blit(self.bullet_img, (bullet.x, bullet.y))
+                self.ecran_jeu.screen.blit(self.bullet_img, (bullet.x, bullet.y))
         self.precedent_tir += 1
 
     def act_regen(self):
@@ -227,20 +233,21 @@ class Camera:  # joueur
 
     def act_img_vie(self):
         self.vie_img = pygame.transform.scale(self.vie_img, (self.vie/self.vie_max*self.largeur, 5))
-        ecran_jeu.screen.blit(self.vie_img, (self.x, self.y + self.hauteur + 5))
+        self.ecran_jeu.screen.blit(self.vie_img, (self.x, self.y + self.hauteur + 5))
 
     def act_img(self):
         self.act_img_vie()
-        self.touche(ecran_jeu.vague.skibidis_ingame)
+        self.touche(self.ecran_jeu.vague.skibidis_ingame)
         self.act_regen()
         self.act_bullet()
-        ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
 
 
 
 class Back:
-    def __init__(self, y):
+    def __init__(self,ecran_jeu, y):
         self.fond = pygame.image.load('images_de _devellopement/fond.jpg').convert()
+        self.fond = pygame.transform.scale(self.fond, (ecran_jeu.largeur, 320))
         self.y = y
         self.hauteur = 320
         self.speed = 5
@@ -249,12 +256,12 @@ class Back:
         self.y += self.speed
         if self.y > 2 * self.hauteur:
             self.y -= 3 * self.hauteur
-        ecran_jeu.screen.blit(self.fond, (0, self.y))
 
 
 class ecran_jeu:
     def __init__(self, largeur, hauteur):
         pygame.init()
+        pygame.display.set_caption("jeu")
         self.clock = pygame.time.Clock()
 
         self.largeur = largeur
@@ -262,11 +269,12 @@ class ecran_jeu:
         self.screen = pygame.display.set_mode((largeur, hauteur))
         self.fond = []
         for i in range(hauteur // 80):
-            self.fond.append(Back(i * 320))
-        self.vague = Vague()
+            self.fond.append(Back(self,i * 320))
         self.music = Sound()
 
     def boucle_run(self):
+        self.camera = Camera(self, 5)
+        self.vague = Vague(self)
         right = False
         left = False
         up = False
@@ -290,26 +298,28 @@ class ecran_jeu:
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                    self.vague.troupe_mini_skibidi(7, -100, ecran_jeu.largeur - 350, 4)
+                    self.vague.troupe_mini_skibidi(7, -100, self.largeur - 350, 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.vague.add(Large_skibidi(randint(0, self.largeur), randint(5, 200), 1), 50)
+                    self.vague.add(Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1), 50)
 
             if bullet:
-                camera.add_bullet()
-            if right and camera.x < self.largeur - 34:
-                camera.x += camera.speed
-            if left and camera.x > -25:
-                camera.x -= camera.speed
-            if up and camera.y > self.hauteur - 200:
-                camera.y -= camera.speed
-            if down and camera.y < self.hauteur - 25:
-                camera.y += camera.speed
+                self.camera.add_bullet()
+            if right and self.camera.x < self.largeur - 34:
+                self.camera.x += self.camera.speed
+            if left and self.camera.x > -25:
+                self.camera.x -= self.camera.speed
+            if up and self.camera.y > self.hauteur - 200:
+                self.camera.y -= self.camera.speed
+            if down and self.camera.y < self.hauteur - 25:
+                self.camera.y += self.camera.speed
 
             for back in self.fond:
                 back.act_img()
+                self.screen.blit(back.fond, (0, back.y))
+
             self.vague.act_img()
-            camera.act_img()
-            if camera.vie <= 0:
+            self.camera.act_img()
+            if self.camera.vie <= 0:
                 continuer = False
                 print('dead')
             pygame.display.update()
@@ -317,10 +327,9 @@ class ecran_jeu:
 
 
 
-largeur =  1280
-hauteur = 720
+largeur =  600
+hauteur = 600
 ecran_jeu = ecran_jeu(largeur, hauteur)
-camera = Camera(5)
 ecran_jeu.boucle_run()
 
 # bar espace pour tirer
