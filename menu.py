@@ -3,7 +3,7 @@ import sys
 import subprocess
 
 pygame.mixer.init()
-menue = pygame.mixer.Sound('sons\menu.mp3')  # Remplacez par votre fichier audio
+menue = pygame.mixer.Sound('sons/menu.mp3')  # Remplacez par votre fichier audio
 
 # Initialisation de Pygame
 pygame.init()
@@ -33,13 +33,13 @@ def draw_menu():
         text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + i * 80))
         pygame.draw.rect(screen, GRAY, text_rect.inflate(20, 20), border_radius=10)
         screen.blit(text, text_rect)
-        image = pygame.image.load('images_de _devellopement\imgmenu.jpg')
+        image = pygame.image.load('images_de _devellopement/imgmenu.jpg')
         image = pygame.transform.scale(image, (300, 200))
         screen.blit(image, (SCREEN_WIDTH//2-300//2, 20))
 
 def draw_credits():
     screen.fill(BLACK)
-    text = font.render("Maxime, Julain, Clément, Tristant", True, WHITE)
+    text = font.render("Maxime, Julain, Clément, Tristan", True, WHITE)
     text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     screen.blit(text, text_rect)
 
