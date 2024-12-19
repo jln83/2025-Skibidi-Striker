@@ -68,7 +68,7 @@ class Menu:
                         elif event.key == pygame.K_RETURN:
                             if self.options[self.selected] == "Lancer le Jeu":
                                 running = False
-                                subprocess.run(["python", "code_gameplay.py"])
+                                subprocess.Popen(["python", "code_gameplay.py"])
                             elif self.options[self.selected] == "Settings":
                                 self.current_menu = "coming_soon"
                             elif self.options[self.selected] == "Crédits":
@@ -89,7 +89,7 @@ class Menu:
                             if text_rect.collidepoint(mouse_pos):
                                 if option == "Lancer le Jeu":
                                     running = False
-                                    subprocess.run(["python", "code_gameplay.py"])
+                                    subprocess.Popen(["python", "code_gameplay.py"])
                                 elif option == "Settings":
                                     self.current_menu = "coming_soon"
                                 elif option == "Crédits":
