@@ -73,13 +73,13 @@ class Large_skibidi:
         self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
         self.target_y = randint(5, 200)
-        self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
+        self.img = pygame.image.load('images_de _devellopement/boss4.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (125, 125))
         self.largeur = 125
         self.hauteur = 125
         self.vie = 100
         self.degat = 10
-        self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
+        self.cadence_tir = 50  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
 
     def add_bullet(self):
@@ -286,7 +286,7 @@ class ecran_jeu:
             # test touches appuyées
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    subprocess.Popen(["python", "menu.py"])
+                    # subprocess.Popen(["python", "menu.py"])
                 # Quitter le programme actuel
                     running = False
                     pygame.quit()
