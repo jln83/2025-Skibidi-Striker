@@ -65,6 +65,64 @@ class Bullet_Ennemi:
         pass
 
 
+class Skibidi_boss:
+    def __init__(self, ecran_jeu, x, y, speed):
+        self.ecran_jeu = ecran_jeu
+        self.x = x
+        self.y = y
+        self.target_x = randint(0, ecran_jeu.largeur)
+        self.target_y = randint(5, 200)
+        self.speed = speed
+        self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
+        self.img = pygame.transform.scale(self.img, (130, 130))
+        self.largeur = 130
+        self.hauteur = 130
+        self.vie = 500
+        self.degat = 40
+        self.cadence_tir = 120
+        self.invocgoal = 1 #randint(300,1250)
+        self.currentinvoc = 0
+        self.precedent_tir = self.cadence_tir
+
+    def add_bullet(self):
+        if self.precedent_tir <= 0:
+            self.ecran_jeu.vague.add(Bullet_Ennemi(self.ecran_jeu, self.x + 60, self.y + 110, self.degat, 1, 5), 0)
+            self.precedent_tir = self.cadence_tir
+        self.precedent_tir -= 1
+
+    def act_img(self):
+        temp_x = self.speed * (self.target_x - self.x)
+        temp_y = self.speed * (self.target_y - self.y)
+        distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
+        temp_x /= distance
+        temp_y /= distance
+        self.x += temp_x * self.speed
+        self.y += temp_y * self.speed
+        if abs(self.x-self.target_x) < 1 and abs(self.y-self.target_y) < 1:
+            self.target_x = randint(0, self.ecran_jeu.largeur-125)
+            self.target_y = randint(5, 200)
+        self.add_bullet()
+        self.invocation()
+        self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
+
+    def touche(self, bullets):
+        for bullet in bullets:
+            if self.x <= bullet.x <= self.x + self.largeur and self.y <= bullet.y <= self.y + self.hauteur:
+                self.vie -= bullet.damage
+                bullet.pene -= 1
+
+    def invocation(self):
+        self.currentinvoc += 1
+        if self.currentinvoc == self.invocgoal:
+            ecran_jeu.vague.troupe_mini_skibidi(7, -100, self.largeur - 350, 4)
+        #elif self.currentinvoc >= self.invocgoal + 10:
+            self.currentinvoc = 0
+            self.invocgoal = randint(300,1250)
+        #elif self.currentinvoc <= self.invocgoal + 10:
+            self.img = pygame.transform.rotate(self.img, 36)
+
+
+
 class Large_skibidi:
     def __init__(self, ecran_jeu, x, y, speed):
         self.ecran_jeu = ecran_jeu
@@ -73,13 +131,13 @@ class Large_skibidi:
         self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
         self.target_y = randint(5, 200)
-        self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
-        self.img = pygame.transform.scale(self.img, (125, 125))
+        self.img = pygame.image.load('images_de _devellopement/boss4.png').convert_alpha()
+        self.img = pygame.transform.scale(self.img, (110, 110))
         self.largeur = 125
         self.hauteur = 125
         self.vie = 100
         self.degat = 10
-        self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
+        self.cadence_tir = 50  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
 
     def add_bullet(self):
@@ -301,6 +359,8 @@ class ecran_jeu:
                     self.vague.troupe_mini_skibidi(7, -100, self.largeur - 350, 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                     self.vague.add(Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1), 50)
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                    self.vague.add(Skibidi_boss(self, randint(0, self.largeur), randint(5, 200), 1), 50)
 
             #if bullet:
             self.camera.add_bullet()
