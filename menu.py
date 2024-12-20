@@ -1,6 +1,5 @@
 import pygame
 import sys
-import subprocess
 
 class Menu:
     def __init__(self):
@@ -52,6 +51,7 @@ class Menu:
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
         running = True
+        run = False
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -68,7 +68,7 @@ class Menu:
                         elif event.key == pygame.K_RETURN:
                             if self.options[self.selected] == "Lancer le Jeu":
                                 running = False
-                                subprocess.Popen(["python", "code_gameplay.py"])
+                                run = True
                             elif self.options[self.selected] == "Settings":
                                 self.current_menu = "coming_soon"
                             elif self.options[self.selected] == "Crédits":
@@ -89,7 +89,7 @@ class Menu:
                             if text_rect.collidepoint(mouse_pos):
                                 if option == "Lancer le Jeu":
                                     running = False
-                                    subprocess.Popen(["python", "code_gameplay.py"])
+                                    run = True
                                 elif option == "Settings":
                                     self.current_menu = "coming_soon"
                                 elif option == "Crédits":
@@ -107,7 +107,7 @@ class Menu:
 
             pygame.display.flip()
         pygame.quit()
+        return run
 
 
     # Lancer le menu principal
-Menu().main_menu()

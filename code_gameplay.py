@@ -1,8 +1,8 @@
 import pygame
 import math
 from random import randint
-import subprocess
-import sys
+import menu
+
 
 # import mobs
 
@@ -73,13 +73,13 @@ class Large_skibidi:
         self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
         self.target_y = randint(5, 200)
-        self.img = pygame.image.load('images_de _devellopement/boss4.png').convert_alpha()
+        self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (125, 125))
         self.largeur = 125
         self.hauteur = 125
         self.vie = 100
         self.degat = 10
-        self.cadence_tir = 50  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
+        self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
 
     def add_bullet(self):
@@ -286,11 +286,7 @@ class ecran_jeu:
             # test touches appuyées
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                    # subprocess.Popen(["python", "menu.py"])
-                # Quitter le programme actuel
-                    running = False
-                    pygame.quit()
-                    sys.exit()
+                    continuer = False
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_RIGHT:
                     right = event.type == pygame.KEYDOWN
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_LEFT:
@@ -306,13 +302,13 @@ class ecran_jeu:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                     self.vague.add(Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1), 50)
 
-            if bullet:
-                self.camera.add_bullet()
+            #if bullet:
+            self.camera.add_bullet()
             if right and self.camera.x < self.largeur - 34:
                 self.camera.x += self.camera.speed
             if left and self.camera.x > -25:
                 self.camera.x -= self.camera.speed
-            if up and self.camera.y > self.hauteur - 200:
+            if up: # and self.camera.y > self.hauteur - 200:
                 self.camera.y -= self.camera.speed
             if down and self.camera.y < self.hauteur - 25:
                 self.camera.y += self.camera.speed
@@ -328,17 +324,15 @@ class ecran_jeu:
                 print('dead')
             pygame.display.update()
             self.clock.tick(50)
-            
-        
-
-            
 
 
 
 largeur =  600
 hauteur = 600
-ecran_jeu = ecran_jeu(largeur, hauteur)
-ecran_jeu.boucle_run()
+menu = menu.Menu()
+if menu.main_menu():
+    ecran_jeu = ecran_jeu(largeur, hauteur)
+    ecran_jeu.boucle_run()
 
 # bar espace pour tirer
 # fleches pour se deplacer
