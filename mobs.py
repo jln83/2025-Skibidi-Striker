@@ -1,6 +1,6 @@
 import pygame
 import math
-from random import randint
+from random import randint, choice
 
 class Vie:
     def __init__(self, entity):
@@ -36,19 +36,20 @@ class Mini_skibidi:
         self.speed = speed
         self.target_x = target[0]
         self.target_y = target[1]
+        self.sens = (self.target_x-self.x)/abs(self.target_x-self.x+1)
         self.vie_act = 15
         self.vie_max = self.vie_act
         self.vie = Vie(self)
         self.degat = 5
 
     def act_img(self):
-        if self.x > self.target_x > self.memox:
+        if self.x >= self.target_x >= self.memox or self.x < self.target_x < self.memox:
             self.memox = self.ecran_jeu.largeur - self.memox
         self.ecran_jeu.screen.blit(self.img_toilettes, (self.x, self.y))
         self.ecran_jeu.screen.blit(self.img_tete, (self.x, self.y))
 
         dx = (self.x - self.target_x) / (self.target_x - self.memox)
-        self.x += self.speed  # * abs(self.target_x-self.memox)/300 # deux version selon celle voulue enlever #
+        self.x += self.speed *self.sens # * abs(self.target_x-self.memox)/300 # deux version selon celle voulue enlever #
         self.y = (self.memoy - self.target_y) * dx ** 2 + self.target_y
         self.vie.act_img()
 
@@ -132,7 +133,8 @@ class Skibidi_boss:
     def invocation(self):
         self.currentinvoc += 1
         if self.currentinvoc == self.invocgoal:
-            self.ecran_jeu.vague.troupe_mini_skibidi(7, -100, self.largeur - 350, 4)
+            self.ecran_jeu.vague.troupe_mini_skibidi(7, choice((-100,self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4)
+            print('yep')
             self.currentinvoc = 0
             self.invocgoal = randint(300, 1250)
 

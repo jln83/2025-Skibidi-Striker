@@ -1,6 +1,6 @@
 import pygame
 import math
-from random import randint
+from random import randint, choice
 import menu
 import mobs
 
@@ -8,6 +8,8 @@ import mobs
 class Vague:
     def __init__(self, ecran_jeu):
         self.ecran_jeu = ecran_jeu
+        self.chrono = 0
+        self.prec_add = 0
         self.skibidis_ingame = []
         self.skibidis_outgame = []
 
@@ -35,7 +37,9 @@ class Vague:
                 self.skibidis_ingame.pop(i)
                 self.ecran_jeu.music.son_dead_skibidi.play()
             i += 1
-
+        self.chrono += 1
+        self.prec_add -= 1
+        
 
 class Vie:
     def __init__(self, entity):
@@ -95,12 +99,12 @@ class Camera:  # joueur
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
         # vie/regen
-        self.vie_act = 100
+        self.vie_act = 1000000 #100
         self.vie_max = self.vie_act
-        self.delay_regen_dmg = 250
-        self.delay_regen = 100
+        self.delay_regen_dmg = 0 #250
+        self.delay_regen = 0 #100
         self.precedent_regen = self.delay_regen
-        self.regen = 1
+        self.regen = 10000
         self.vie = Vie(self)
 
     def add_bullet(self):
@@ -126,7 +130,7 @@ class Camera:  # joueur
                     self.NotGetToMuchDamage = 20
                     self.precedent_regen = self.delay_regen_dmg
         self.NotGetToMuchDamage -= 1
-        print(self.vie_act)
+        #print(self.vie_act)
 
     def act_bullet(self):
         for bullet in self.bullets:
@@ -200,7 +204,8 @@ class ecran_jeu:
                 if (event.type == pygame.KEYDOWN or event.type == pygame.KEYUP) and event.key == pygame.K_SPACE:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
-                    self.vague.troupe_mini_skibidi(7, -100, self.largeur - 350, 4)
+                    #self.vague.troupe_mini_skibidi(7, -100, self.hauteur - 350, 4)y
+                    self.vague.troupe_mini_skibidi(7, choice((-100,self.largeur+100)), self.hauteur - randint(350, 500), 4)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                     self.vague.add(mobs.Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1), 50)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
@@ -216,7 +221,7 @@ class ecran_jeu:
             if self.camera.y < self.hauteur - self.camera.hauteur/2:
                 if down:
                     self.camera.y += self.camera.speed
-            else: self.camera.y -= 1
+            else: self.camera.y = self.hauteur - self.camera.hauteur/2
 
             for back in self.fond:
                 back.act_img()
