@@ -9,7 +9,7 @@ class Vague:
     def __init__(self, ecran_jeu):
         self.ecran_jeu = ecran_jeu
         self.chrono = 0
-        self.prec_add = 0
+        self.prec_add = randint(200, 400)
         self.skibidis_ingame = []
         self.skibidis_outgame = []
 
@@ -39,7 +39,19 @@ class Vague:
             i += 1
         self.chrono += 1
         self.prec_add -= 1
-        
+        self.infinite_vague()
+
+    def infinite_vague(self):
+        if self.chrono == 1500:
+            self.add(mobs.Skibidi_boss(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
+        elif self.prec_add <= 0 and mobs.Skibidi_boss not in self.skibidis_ingame:
+            print('why')
+            self.prec_add = randint(round(200-self.chrono*0.01), round(400-self.chrono*0.01))
+            if randint(0, 4) == 0:
+                self.add(mobs.Large_skibidi(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
+            else:
+                self.troupe_mini_skibidi(7, choice((-100, self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4)
+
 
 class Vie:
     def __init__(self, entity):
@@ -99,12 +111,12 @@ class Camera:  # joueur
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
         # vie/regen
-        self.vie_act = 1000000 #100
+        self.vie_act = 100   # 1000000
         self.vie_max = self.vie_act
-        self.delay_regen_dmg = 0 #250
-        self.delay_regen = 0 #100
+        self.delay_regen_dmg = 250  # 0
+        self.delay_regen = 100  # 1
         self.precedent_regen = self.delay_regen
-        self.regen = 10000
+        self.regen = 1  # 10000
         self.vie = Vie(self)
 
     def add_bullet(self):
@@ -164,7 +176,7 @@ class Back:
             self.y -= 3 * self.hauteur
 
 
-class ecran_jeu:
+class Ecran_jeu:
     def __init__(self, largeur, hauteur):
         pygame.init()
         pygame.display.set_caption("jeu")
@@ -235,13 +247,20 @@ class ecran_jeu:
             pygame.display.update()
             self.clock.tick(50)
 
+def jeu():
+    game = True
+    while game:
+        largeur = 600
+        hauteur = 600
+        menue = menu.Menu()
+        if menue.main_menu():
+            ecran_jeu = Ecran_jeu(largeur, hauteur)
+            ecran_jeu.boucle_run()
+        else:
+            game = False
 
-largeur = 600
-hauteur = 600
-menu = menu.Menu()
-if menu.main_menu():
-    ecran_jeu = ecran_jeu(largeur, hauteur)
-    ecran_jeu.boucle_run()
+jeu()
+
 
 # bar espace pour tirer
 # fleches pour se deplacer
