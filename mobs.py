@@ -41,6 +41,8 @@ class Mini_skibidi:
         self.vie_max = self.vie_act
         self.vie = Vie(self)
         self.degat = 5
+        self.dmg_timer_init = (self.ecran_jeu.camera.largeur + self.largeur)/self.speed
+        self.dmg_timer = self.dmg_timer_init
 
     def act_img(self):
         if self.x >= self.target_x >= self.memox or self.x < self.target_x < self.memox:
@@ -52,6 +54,7 @@ class Mini_skibidi:
         self.x += self.speed *self.sens # * abs(self.target_x-self.memox)/300 # deux version selon celle voulue enlever #
         self.y = (self.memoy - self.target_y) * dx ** 2 + self.target_y
         self.vie.act_img()
+        self.dmg_timer -= 1
 
     def touche(self, bullets):
         for bullet in bullets:
@@ -71,10 +74,13 @@ class Bullet_Ennemi:
         self.vie_act = pene
         self.largeur = 1
         self.hauteur = 1
+        self.dmg_timer_init = (self.ecran_jeu.camera.hauteur+self.hauteur)/self.speed
+        self.dmg_timer = self.dmg_timer_init
 
     def act_img(self):
         self.y += self.speed
         self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
+        self.dmg_timer -= 1
 
     def touche(self, bullets):
         pass
@@ -100,6 +106,8 @@ class Skibidi_boss:
         self.invocgoal = randint(300, 1250)
         self.currentinvoc = 0
         self.precedent_tir = self.cadence_tir
+        self.dmg_timer_init = (math.sqrt(self.ecran_jeu.camera.largeur**2+self.ecran_jeu.camera.hauteur**2)+math.sqrt(self.hauteur**2+self.largeur**2))/self.ecran_jeu.camera.speed
+        self.dmg_timer = self.dmg_timer_init
 
     def add_bullet(self):
         if self.precedent_tir <= 0:
@@ -122,6 +130,7 @@ class Skibidi_boss:
         self.invocation()
         self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
         self.vie.act_img()
+        self.dmg_timer -= 1
 
 
     def touche(self, bullets):
@@ -157,6 +166,8 @@ class Large_skibidi:
         self.degat = 10
         self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
+        self.dmg_timer_init = (math.sqrt(self.ecran_jeu.camera.largeur**2+self.ecran_jeu.camera.hauteur**2)+math.sqrt(self.hauteur**2+self.largeur**2))/self.ecran_jeu.camera.speed
+        self.dmg_timer = self.dmg_timer_init
 
     def add_bullet(self):
         if self.precedent_tir <= 0:
@@ -178,7 +189,7 @@ class Large_skibidi:
         self.add_bullet()
         self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
         self.vie.act_img()
-
+        self.dmg_timer -= 1
 
     def touche(self, bullets):
         for bullet in bullets:

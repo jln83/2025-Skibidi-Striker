@@ -13,6 +13,14 @@ class Vague:
         self.skibidis_ingame = []
         self.skibidis_outgame = []
 
+    def __contains__(self, skibidi): #on admet que skibidi est ennemi
+        for skibidis in self.skibidis_ingame:
+            if type(skibidis) == type(skibidi):
+                #print('yes')
+                return True
+        return False
+
+
     def add(self, skibidi, tempo):
         self.skibidis_outgame.append([skibidi, tempo])
 
@@ -44,8 +52,8 @@ class Vague:
     def infinite_vague(self):
         if self.chrono == 1500:
             self.add(mobs.Skibidi_boss(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
-        elif self.prec_add <= 0 and mobs.Skibidi_boss not in self.skibidis_ingame:
-            print('why')
+        elif self.prec_add <= 0 and not(mobs.Skibidi_boss(self.ecran_jeu, -100, -100, 0) in self):
+            #print('why')
             self.prec_add = randint(round(200-self.chrono*0.01), round(400-self.chrono*0.01))
             if randint(0, 4) == 0:
                 self.add(mobs.Large_skibidi(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
@@ -111,7 +119,7 @@ class Camera:  # joueur
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
         # vie/regen
-        self.vie_act = 100   # 1000000
+        self.vie_act = 1000000   # 100
         self.vie_max = self.vie_act
         self.delay_regen_dmg = 250  # 0
         self.delay_regen = 100  # 1
@@ -126,7 +134,6 @@ class Camera:  # joueur
             self.ecran_jeu.music.sound_bullet.play()
 
     def touche(self, skibidis):
-        if self.NotGetToMuchDamage <= 0:
             for skibidi in skibidis:
                 if (
                         skibidi.x + skibidi.largeur >= self.x >= skibidi.x and (
@@ -136,13 +143,16 @@ class Camera:  # joueur
                         self.x <= skibidi.x <= self.x + self.largeur and (
                         self.y <= skibidi.y <= self.y + self.hauteur or self.y <= skibidi.y <= self.y + self.hauteur)) or (
                         self.x <= skibidi.x <= self.x + self.largeur and (
-                        self.y <= skibidi.y <= self.y + self.hauteur or self.y <= skibidi.y <= self.y + self.hauteur))):
+                        self.y <= skibidi.y <= self.y + self.hauteur or self.y <= skibidi.y <= self.y + self.hauteur))) and (
+                        skibidi.dmg_timer <= 0
+                ):
+                    skibidi.dmg_timer = skibidi.dmg_timer_init
                     self.vie_act -= skibidi.degat
                     self.y += skibidi.speed  # knockback
                     self.NotGetToMuchDamage = 20
                     self.precedent_regen = self.delay_regen_dmg
-        self.NotGetToMuchDamage -= 1
-        #print(self.vie_act)
+                    print('oh no')
+            #print(self.vie_act)
 
     def act_bullet(self):
         for bullet in self.bullets:
