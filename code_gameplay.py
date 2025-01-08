@@ -8,6 +8,7 @@ import mobs
 class Vague:
     def __init__(self, ecran_jeu):
         self.ecran_jeu = ecran_jeu
+        self.lvl = 1
         self.chrono = 0
         self.prec_add = randint(200, 400)
         self.skibidis_ingame = []
@@ -24,10 +25,10 @@ class Vague:
     def add(self, skibidi, tempo):
         self.skibidis_outgame.append([skibidi, tempo])
 
-    def troupe_mini_skibidi(self, nb, x, y, speed):
+    def troupe_mini_skibidi(self, nb, x, y, speed, lvl):
         for i in range(nb):
-            self.add(mobs.Mini_skibidi(self.ecran_jeu, x, y, speed, (self.ecran_jeu.camera.x, self.ecran_jeu.camera.y)),
-                     i * mobs.Mini_skibidi(self.ecran_jeu, -1, -1, -1, (-1, -1)).largeur / speed)
+            self.add(mobs.Mini_skibidi(self.ecran_jeu, x, y, speed, (self.ecran_jeu.camera.x, self.ecran_jeu.camera.y), lvl),
+                     i * mobs.Mini_skibidi(self.ecran_jeu, -1, -1, -1, (-1, -1), 1).largeur / speed)
 
     def act_img(self):
         i = 0
@@ -45,20 +46,24 @@ class Vague:
                 self.skibidis_ingame.pop(i)
                 self.ecran_jeu.music.son_dead_skibidi.play()
             i += 1
-        self.chrono += 1
         self.prec_add -= 1
         self.infinite_vague()
 
     def infinite_vague(self):
-        if self.chrono == 1500:
-            self.add(mobs.Skibidi_boss(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
-        elif self.prec_add <= 0 and not(mobs.Skibidi_boss(self.ecran_jeu, -100, -100, 0) in self):
-            #print('why')
-            self.prec_add = randint(round(200-self.chrono*0.01), round(400-self.chrono*0.01))
-            if randint(0, 4) == 0:
-                self.add(mobs.Large_skibidi(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1), 0)
-            else:
-                self.troupe_mini_skibidi(7, choice((-100, self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4)
+        if self.chrono == 3000:
+            self.add(mobs.Skibidi_boss(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1, self.lvl), 0)
+            self.lvl += 1
+            self.chrono = 0
+            print(str(self.lvl))
+        elif not(mobs.Skibidi_boss(self.ecran_jeu, -100, -100, 0, self.lvl) in self):
+            if self.prec_add <= 0:
+                #print('why')
+                self.prec_add = randint(round(200-self.chrono*0.01), round(400-self.chrono*0.01))
+                if randint(0, 4) == 0:
+                    self.add(mobs.Large_skibidi(self.ecran_jeu, randint(0, self.ecran_jeu.largeur), randint(5, 200), 1, self.lvl), 0)
+                else:
+                    self.troupe_mini_skibidi(7, choice((-100, self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4, self.lvl)
+            self.chrono += 1
 
 
 class Vie:
@@ -119,7 +124,7 @@ class Camera:  # joueur
         self.precedent_tir = self.cadence_tir
         self.NotGetToMuchDamage = 0
         # vie/regen
-        self.vie_act = 1000000   # 100
+        self.vie_act = 100   # 1000000
         self.vie_max = self.vie_act
         self.delay_regen_dmg = 250  # 0
         self.delay_regen = 100  # 1
@@ -227,11 +232,11 @@ class Ecran_jeu:
                     bullet = event.type == pygame.KEYDOWN
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_n:
                     #self.vague.troupe_mini_skibidi(7, -100, self.hauteur - 350, 4)y
-                    self.vague.troupe_mini_skibidi(7, choice((-100,self.largeur+100)), self.hauteur - randint(350, 500), 4)
+                    self.vague.troupe_mini_skibidi(7, choice((-100,self.largeur+100)), self.hauteur - randint(350, 500),4,1)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-                    self.vague.add(mobs.Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1), 50)
+                    self.vague.add(mobs.Large_skibidi(self, randint(0, self.largeur), randint(5, 200), 1, 1), 50)
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
-                    self.vague.add(mobs.Skibidi_boss(self, randint(0, self.largeur), randint(5, 200), 1), 50)
+                    self.vague.add(mobs.Skibidi_boss(self, randint(0, self.largeur), randint(5, 200), 1, 1), 50)
 
             self.camera.add_bullet()
             if right and self.camera.x < self.largeur - 34:

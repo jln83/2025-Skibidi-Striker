@@ -21,7 +21,7 @@ class Vie:
 
 
 class Mini_skibidi:
-    def __init__(self, ecran_jeu, x, y, speed, target):
+    def __init__(self, ecran_jeu, x, y, speed, target, lvl):
         self.ecran_jeu = ecran_jeu
         self.memox = x
         self.memoy = y
@@ -33,14 +33,15 @@ class Mini_skibidi:
         self.img_toilettes = pygame.image.load('images_de _devellopement/toilette_sanst_tete.png').convert_alpha()
         self.img_tete = pygame.transform.scale(self.img_tete, (self.largeur, self.hauteur))
         self.img_toilettes = pygame.transform.scale(self.img_toilettes, (self.largeur, self.hauteur))
+        self.lvl = lvl
         self.speed = speed
         self.target_x = target[0]
         self.target_y = target[1]
         self.sens = (self.target_x-self.x)/abs(self.target_x-self.x+1)
-        self.vie_act = 15
+        self.vie_act = 15*math.sqrt(lvl)
         self.vie_max = self.vie_act
         self.vie = Vie(self)
-        self.degat = 5
+        self.degat = 5*math.sqrt(lvl)
         self.dmg_timer_init = (self.ecran_jeu.camera.largeur + self.largeur)/self.speed
         self.dmg_timer = self.dmg_timer_init
 
@@ -87,7 +88,7 @@ class Bullet_Ennemi:
 
 
 class Skibidi_boss:
-    def __init__(self, ecran_jeu, x, y, speed):
+    def __init__(self, ecran_jeu, x, y, speed, lvl):
         self.ecran_jeu = ecran_jeu
         self.x = x
         self.y = y
@@ -98,10 +99,11 @@ class Skibidi_boss:
         self.hauteur = 130
         self.img = pygame.image.load('images_de _devellopement/boss5.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (self.largeur, self.hauteur))
-        self.vie_act = 500
+        self.lvl = lvl
+        self.vie_act = 500*math.sqrt(lvl)
         self.vie_max = self.vie_act
         self.vie = Vie(self)
-        self.degat = 40
+        self.degat = 40*math.sqrt(lvl)
         self.cadence_tir = 120
         self.invocgoal = randint(300, 1250)
         self.currentinvoc = 0
@@ -142,28 +144,29 @@ class Skibidi_boss:
     def invocation(self):
         self.currentinvoc += 1
         if self.currentinvoc == self.invocgoal:
-            self.ecran_jeu.vague.troupe_mini_skibidi(7, choice((-100,self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4)
+            self.ecran_jeu.vague.troupe_mini_skibidi(7, choice((-100,self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4, self.lvl)
             print('yep')
             self.currentinvoc = 0
             self.invocgoal = randint(300, 1250)
 
 
 class Large_skibidi:
-    def __init__(self, ecran_jeu, x, y, speed):
+    def __init__(self, ecran_jeu, x, y, speed, lvl):
         self.ecran_jeu = ecran_jeu
         self.x = x
         self.y = y
-        self.speed = speed
         self.target_x = randint(0, ecran_jeu.largeur)
         self.target_y = randint(5, 200)
         self.largeur = 110
         self.hauteur = 110
         self.img = pygame.image.load('images_de _devellopement/boss4.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (self.largeur, self.hauteur))
-        self.vie_act = 100
+        self.lvl = lvl
+        self.speed = speed
+        self.vie_act = 100*math.sqrt(lvl)
         self.vie_max = self.vie_act
         self.vie = Vie(self)
-        self.degat = 10
+        self.degat = 10*math.sqrt(lvl)
         self.cadence_tir = 25  # a ameliorer mais fonctionel (1 tir toutes les 25 images 50 images par sec)
         self.precedent_tir = self.cadence_tir
         self.dmg_timer_init = (math.sqrt(self.ecran_jeu.camera.largeur**2+self.ecran_jeu.camera.hauteur**2)+math.sqrt(self.hauteur**2+self.largeur**2))/self.ecran_jeu.camera.speed
