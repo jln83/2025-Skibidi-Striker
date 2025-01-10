@@ -111,6 +111,18 @@ class Skibidi_boss:
         self.dmg_timer_init = (math.sqrt(self.ecran_jeu.camera.largeur**2+self.ecran_jeu.camera.hauteur**2)+math.sqrt(self.hauteur**2+self.largeur**2))/self.ecran_jeu.camera.speed
         self.dmg_timer = self.dmg_timer_init
 
+        # Charge le joueur
+        self.ancien_x = self.x
+        self.ancien_y = self.y
+        self.current_charge = 0
+        self.charge_goal = randint(400, 1250)
+        self.charging = False
+        self.returning = False
+        self.charge_steps = 0
+        self.charge_distance = 500
+        self.charge_direction = (0, 0)
+
+
     def add_bullet(self):
         if self.precedent_tir <= 0:
             self.ecran_jeu.vague.add(Bullet_Ennemi(self.ecran_jeu, self.x + 60, self.y + 110, self.degat, 1, 5), 0)
@@ -120,9 +132,10 @@ class Skibidi_boss:
     def act_img(self):
         temp_x = self.speed * (self.target_x - self.x)
         temp_y = self.speed * (self.target_y - self.y)
-        distance = math.sqrt(temp_x ** 2 + temp_y ** 2)
-        temp_x /= distance
-        temp_y /= distance
+        distance = math.sqrt(temp_x**2 + temp_y**2)
+        if distance != 0:
+            temp_x /= distance
+            temp_y /= distance
         self.x += temp_x * self.speed
         self.y += temp_y * self.speed
         if abs(self.x - self.target_x) < 1 and abs(self.y - self.target_y) < 1:
@@ -133,7 +146,7 @@ class Skibidi_boss:
         self.ecran_jeu.screen.blit(self.img, (self.x, self.y))
         self.vie.act_img()
         self.dmg_timer -= 1
-
+        self.charge()
 
     def touche(self, bullets):
         for bullet in bullets:
@@ -145,9 +158,43 @@ class Skibidi_boss:
         self.currentinvoc += 1
         if self.currentinvoc == self.invocgoal:
             self.ecran_jeu.vague.troupe_mini_skibidi(7, choice((-100,self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4, self.lvl)
-            print('yep')
             self.currentinvoc = 0
             self.invocgoal = randint(300, 1250)
+
+    def charge(self):
+        if not self.charging and not self.returning:
+            self.current_charge += 1
+            if self.current_charge == self.charge_goal:
+                self.ancien_x = self.x
+                self.ancien_y = self.y
+                temp_x = self.ecran_jeu.camera.x
+                temp_y = self.ecran_jeu.camera.y
+                distance = math.sqrt(temp_x**2 + temp_y**2)
+                if distance != 0:
+                    temp_x /= distance
+                    temp_y /= distance
+
+                self.charge_direction = (temp_x, temp_y)
+                self.charging = True
+                self.charge_steps = 0
+        elif self.charging:
+            if self.charge_steps < 10:
+                self.x += self.charge_direction[0] * (self.charge_distance / 10)
+                self.y += self.charge_direction[1] * (self.charge_distance / 10)
+                self.charge_steps += 1
+            else:
+                self.charging = False
+                self.returning = True
+                self.charge_steps = 0
+        elif self.returning:
+            if self.charge_steps < 10:
+                self.x -= self.charge_direction[0] * (self.charge_distance / 10)
+                self.y -= self.charge_direction[1] * (self.charge_distance / 10)
+                self.charge_steps += 1
+            else:
+                self.returning = False
+                self.current_charge = 0
+                self.charge_goal = randint(300, 1250)
 
 
 class Large_skibidi:
