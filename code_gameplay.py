@@ -43,6 +43,7 @@ class Vague:
             skibidi.act_img()
             skibidi.touche(self.ecran_jeu.camera.bullets)
             if skibidi.vie_act <= 0:
+                self.ecran_jeu.score += skibidi.score
                 self.skibidis_ingame.pop(i)
                 self.ecran_jeu.music.son_dead_skibidi.play()
             i += 1
@@ -64,6 +65,7 @@ class Vague:
                 else:
                     self.troupe_mini_skibidi(7, choice((-100, self.ecran_jeu.largeur+100)), self.ecran_jeu.hauteur - randint(350, 500), 4, self.lvl)
             self.chrono += 1
+        self.ecran_jeu.score += 2
 
 
 class Vie:
@@ -196,6 +198,7 @@ class Ecran_jeu:
         pygame.init()
         pygame.display.set_caption("jeu")
         self.clock = pygame.time.Clock()
+        self.score = 0
 
         self.largeur = largeur
         self.hauteur = hauteur
@@ -259,6 +262,8 @@ class Ecran_jeu:
             if self.camera.vie_act <= 0:
                 continuer = False
                 print('dead')
+            self.screen.blit(pygame.font.Font(None, 50).render(str(self.score), True, (0,0,0)),(0,0))
+            print(self.score)
             pygame.display.update()
             self.clock.tick(50)
 

@@ -102,6 +102,13 @@ class Menu:
 
                 if event.type == pygame.KEYDOWN:
                     self.menue.play()
+                    if event.key == pygame.K_ESCAPE:
+                        if self.current_menu != "main":
+                            self.current_menu = "main"
+                        else:
+                            running = False
+                            sys.exit()
+
                     if self.current_menu == "main":
                         if event.key == pygame.K_UP:
                             self.selected = (self.selected - 1) % len(self.options)
@@ -115,14 +122,15 @@ class Menu:
                                 self.current_menu = "settings"
                             elif self.options[self.selected] == "Crédits":
                                 self.current_menu = "credits"
-                        elif event.key == pygame.K_ESCAPE:
-                            running = False
-                            sys.exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_pos = pygame.mouse.get_pos()
                     self.menue.play()
-                    if self.current_menu == "main":
+                    if self.current_menu == "settings" and self.button_rect_settings.collidepoint(mouse_pos):
+                        self.current_menu = "main"
+                    elif self.current_menu == "credits" and self.button_rect_credits.collidepoint(mouse_pos):
+                        self.current_menu = "main"
+                    elif self.current_menu == "main":
                         for i, option in enumerate(self.options):
                             text_rect = self.font.render(option, True, self.WHITE).get_rect(
                                 center=(self.largeur // 2, self.hauteur // 2 + i * 80))
@@ -134,10 +142,6 @@ class Menu:
                                     self.current_menu = "settings"
                                 elif option == "Crédits":
                                     self.current_menu = "credits"
-                    elif self.current_menu == "settings" and self.button_rect_settings.collidepoint(mouse_pos):
-                        self.current_menu = "main"
-                    elif self.current_menu == "credits" and self.button_rect_credits.collidepoint(mouse_pos):
-                        self.current_menu = "main"
 
             if self.current_menu == "main":
                 self.draw_menu()
@@ -149,5 +153,4 @@ class Menu:
             pygame.display.flip()
         pygame.quit()
         return run
-
 

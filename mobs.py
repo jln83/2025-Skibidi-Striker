@@ -23,6 +23,7 @@ class Vie:
 class Mini_skibidi:
     def __init__(self, ecran_jeu, x, y, speed, target, lvl):
         self.ecran_jeu = ecran_jeu
+        self.score = 1000
         self.memox = x
         self.memoy = y
         self.x = x
@@ -90,6 +91,7 @@ class Bullet_Ennemi:
 class Skibidi_boss:
     def __init__(self, ecran_jeu, x, y, speed, lvl):
         self.ecran_jeu = ecran_jeu
+        self.score = 10000
         self.x = x
         self.y = y
         self.target_x = randint(0, ecran_jeu.largeur)
@@ -200,6 +202,7 @@ class Skibidi_boss:
 class Large_skibidi:
     def __init__(self, ecran_jeu, x, y, speed, lvl):
         self.ecran_jeu = ecran_jeu
+        self.score = 1000
         self.x = x
         self.y = y
         self.target_x = randint(0, ecran_jeu.largeur)
