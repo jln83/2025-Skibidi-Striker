@@ -44,7 +44,7 @@ class Menu:
         self.screen.blit(image, (self.largeur // 2 - 300 // 2, 20))
 
     def draw_settings(self):
-        """Affiche le menu des paramètres."""
+        """Affiche le menu des paramètres avec un bouton de retour."""
         self.screen.fill(self.BLACK)
 
         # Titre
@@ -65,17 +65,26 @@ class Menu:
             text_rect = text.get_rect(center=(self.largeur // 2, 200 + i * 50))
             self.screen.blit(text, text_rect)
 
-        # Message de retour
-        return_text = self.font.render("Appuyez sur Echap pour revenir", True, self.GRAY)
-        return_text_rect = return_text.get_rect(center=(self.largeur // 2, self.hauteur - 50))
-        self.screen.blit(return_text, return_text_rect)
+        # Bouton Retour
+        button_text = self.font.render("Retour", True, self.WHITE)
+        self.button_rect_settings = button_text.get_rect(center=(self.largeur // 2, self.hauteur - 100))
+        pygame.draw.rect(self.screen, self.GRAY, self.button_rect_settings.inflate(20, 20), border_radius=10)
+        self.screen.blit(button_text, self.button_rect_settings)
 
     def draw_credits(self):
-        """Affiche le menu des crédits."""
+        """Affiche le menu des crédits avec un bouton de retour."""
         self.screen.fill(self.BLACK)
-        text = self.font.render("Maxime, Julain, Clément, Tristant", True, self.WHITE)
+
+        # Crédits
+        text = self.font.render("Maxime, Julain, Clément, Tristan", True, self.WHITE)
         text_rect = text.get_rect(center=(self.largeur // 2, self.hauteur // 2))
         self.screen.blit(text, text_rect)
+
+        # Bouton Retour
+        button_text = self.font.render("Retour", True, self.WHITE)
+        self.button_rect_credits = button_text.get_rect(center=(self.largeur // 2, self.hauteur - 100))
+        pygame.draw.rect(self.screen, self.GRAY, self.button_rect_credits.inflate(20, 20), border_radius=10)
+        self.screen.blit(button_text, self.button_rect_credits)
 
     def main_menu(self):
         """Boucle principale du menu."""
@@ -109,12 +118,6 @@ class Menu:
                         elif event.key == pygame.K_ESCAPE:
                             running = False
                             sys.exit()
-                    elif self.current_menu == "settings":
-                        if event.key == pygame.K_ESCAPE:
-                            self.current_menu = "main"
-                    elif self.current_menu == "credits":
-                        if event.key == pygame.K_ESCAPE:
-                            self.current_menu = "main"
 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_pos = pygame.mouse.get_pos()
@@ -131,6 +134,10 @@ class Menu:
                                     self.current_menu = "settings"
                                 elif option == "Crédits":
                                     self.current_menu = "credits"
+                    elif self.current_menu == "settings" and self.button_rect_settings.collidepoint(mouse_pos):
+                        self.current_menu = "main"
+                    elif self.current_menu == "credits" and self.button_rect_credits.collidepoint(mouse_pos):
+                        self.current_menu = "main"
 
             if self.current_menu == "main":
                 self.draw_menu()
@@ -142,6 +149,5 @@ class Menu:
             pygame.display.flip()
         pygame.quit()
         return run
-
 
 
