@@ -1,6 +1,6 @@
 # Skibidi Striker
 
-Bienvenue dans **Skibidi Striker**, un jeu inspiré de *1945 Striker* et situé dans l'univers loufoque de *Skibidi*. Plongez dans un shoot'em up captivant et affrontez des ennemis pour obtenir le meilleur score possible !
+Bienvenue dans **Skibidi Striker**, un jeu inspiré de *1945 Striker* et situé dans l'univers loufoque de *Skibidi Toilet*. Plongez dans un shoot'em up captivant et affrontez des ennemis pour obtenir le meilleur score possible !
 
 ## Prérequis
 
